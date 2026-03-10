@@ -54,19 +54,19 @@ class RenderGraph
 public:
     // Construct with references to objects managed elsewhere (HelloTriangleApplication keeps lifetime)
     RenderGraph(vk::raii::Device& device,
-                vk::raii::SwapchainKHR& swapchain,
-                vk::raii::Queue& graphicsQueue,
-                vk::raii::Queue& presentQueue,
-                vk::raii::CommandPool& commandPool,
-                std::vector<vk::raii::ImageView>& swapchainImageViews,
-                vk::Extent2D swapChainExtent)
+        vk::raii::SwapchainKHR& swapchain,
+        vk::raii::Queue& graphicsQueue,
+        vk::raii::Queue& presentQueue,
+        vk::raii::CommandPool& commandPool,
+        std::vector<vk::raii::ImageView>& swapchainImageViews,
+        vk::Extent2D swapChainExtent)
         : m_device(device),
-          m_swapchain(swapchain),
-          m_graphicsQueue(graphicsQueue),
-          m_presentQueue(presentQueue),
-          m_commandPool(commandPool),
-          m_imageViews(swapchainImageViews),
-          m_swapChainExtent(swapChainExtent)
+        m_swapchain(swapchain),
+        m_graphicsQueue(graphicsQueue),
+        m_presentQueue(presentQueue),
+        m_commandPool(commandPool),
+        m_imageViews(swapchainImageViews),
+        m_swapChainExtent(swapChainExtent)
     {
         // cache images
         m_swapchainImages = m_swapchain.getImages();

@@ -1,4 +1,10 @@
-float4 main() : SV_Target
+struct FragmentInput
 {
-    return float4(1.0, 0.0, 0.0, 1.0);
+    float4 sv_position : SV_Position;
+    float3 colour : COLOR0;
+};
+
+float4 main(FragmentInput input) : SV_Target
+{
+    return float4(input.colour, 1.0);
 }

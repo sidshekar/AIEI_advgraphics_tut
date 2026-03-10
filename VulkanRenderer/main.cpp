@@ -1,8 +1,9 @@
-#include <cstdlib>
+﻿#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <chrono>
 
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <vulkan/vulkan_raii.hpp>
@@ -10,6 +11,9 @@
 #include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
+#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "RenderGraph.hpp"
 
@@ -41,6 +45,57 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi)
     return (v < lo) ? lo : (hi < v) ? hi : v;
 }
 
+struct Vertex
+{
+    glm::vec2 position;
+
+    static vk::VertexInputBindingDescription getBindingDescription() {
+        vk::VertexInputBindingDescription bindingDescription{};
+        bindingDescription.binding = 0;
+        bindingDescription.stride = sizeof(Vertex);
+        return bindingDescription;
+    }
+
+    static std::array<vk::VertexInputAttributeDescription, 1> getAttributeDescriptions() {
+        return {
+            vk::VertexInputAttributeDescription(0, 0, vk::Format::eR32G32Sfloat, offsetof(Vertex, position))
+        };
+    }
+};
+
+const std::vector<Vertex> vertices =
+{
+    {{-0.5, -0.5}},
+    {{0.5, -0.5}},
+    {{0.5, 0.5}},
+    {{-0.5, 0.5}}
+};
+
+const std::vector<uint32_t> indices =
+{
+    0, 1, 2, 2, 3, 0
+};
+
+const vk::DrawIndexedIndirectCommand drawCmd = {
+    static_cast<uint32_t>(indices.size()), // indexCount
+    1, // instanceCount
+    0, // firstIndex
+    0, // vertexOffset
+    0  // firstInstance
+};
+
+struct UniformBufferObject
+{
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 proj;
+};
+
+struct StorageBufferObject
+{
+    glm::vec3 colour;
+};
+
 class HelloTriangleApplication {
 public:
     void run() {
@@ -66,9 +121,23 @@ private:
     vk::raii::SwapchainKHR swapChain = nullptr;
     std::vector<vk::Image> swapChainImages{};
     std::vector<vk::raii::ImageView> swapChainImageViews{};
+    vk::raii::DescriptorSetLayout descriptorSetLayout = nullptr;
     vk::raii::PipelineLayout pipelineLayout = nullptr;
     vk::raii::Pipeline graphicsPipeline = nullptr;
     vk::raii::CommandPool commandPool = nullptr;
+    vk::raii::Buffer vertexBuffer = nullptr;
+    vk::raii::DeviceMemory vertexBufferMemory = nullptr;
+    vk::raii::Buffer indexBuffer = nullptr;
+    vk::raii::DeviceMemory indexBufferMemory = nullptr;
+    vk::raii::Buffer indirectBuffer = nullptr;
+    vk::raii::DeviceMemory indirectBufferMemory = nullptr;
+    vk::raii::Buffer storageBuffer = nullptr;
+    vk::raii::DeviceMemory storageBufferMemory = nullptr;
+    std::vector<vk::raii::Buffer> uniformBuffers;
+    std::vector<vk::raii::DeviceMemory> uniformBuffersMemory;
+    std::vector<void*> uniformBuffersMapped;
+    vk::raii::DescriptorPool descriptorPool = nullptr;
+    std::vector<vk::raii::DescriptorSet> descriptorSets;
 
     // Removed old single command buffer and sync objects:
     // vk::raii::CommandBuffer commandBuffer = nullptr;
@@ -95,11 +164,18 @@ private:
         createLogicalDevice();
         createSwapChain();
         createImageViews();
+        createDescriptorSetLayout();
         createGraphicsPipeline();
         createCommandPool();
-
         // create and initialize the render graph (allocates per-image command-buffers and sync)
         initRenderGraph();
+        createVertexBuffer();
+        createIndexBuffer();
+        createIndirectBuffer();
+        createUniformBuffers();
+        createStorageBuffer();
+        createDescriptorPool();
+        createDescriptorSets();
     }
 
     void createInstance() {
@@ -316,9 +392,8 @@ private:
         swapChainCreateInfo.imageArrayLayers = 1; // keep 1 unless rendering for VR
         swapChainCreateInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment; // we are rendering to image directly
         swapChainCreateInfo.preTransform = surfaceCapabilities.currentTransform;  // don't apply further transformation
-        swapChainCreateInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque; // don?t blend with other windows in the system
         swapChainCreateInfo.presentMode = chooseSwapPresentMode(availablePresentModes);
-        swapChainCreateInfo.clipped = true;  // don?t update the pixels that are obscured
+        swapChainCreateInfo.clipped = true;  // don�t update the pixels that are obscured
 
         uint32_t queueFamilyIndices[] = { graphicsFamily, presentFamily };
 
@@ -326,9 +401,6 @@ private:
             swapChainCreateInfo.imageSharingMode = vk::SharingMode::eConcurrent;
             swapChainCreateInfo.queueFamilyIndexCount = 2;
             swapChainCreateInfo.pQueueFamilyIndices = queueFamilyIndices;
-        }
-        else {
-            swapChainCreateInfo.imageSharingMode = vk::SharingMode::eExclusive;
         }
 
         swapChain = vk::raii::SwapchainKHR(device, swapChainCreateInfo);
@@ -382,10 +454,6 @@ private:
         imageViewCreateInfo.viewType = vk::ImageViewType::e2D;
         imageViewCreateInfo.format = swapChainSurfaceFormat.format;
         imageViewCreateInfo.subresourceRange = { vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 };
-        imageViewCreateInfo.components.r = vk::ComponentSwizzle::eIdentity;
-        imageViewCreateInfo.components.g = vk::ComponentSwizzle::eIdentity;
-        imageViewCreateInfo.components.b = vk::ComponentSwizzle::eIdentity;
-        imageViewCreateInfo.components.a = vk::ComponentSwizzle::eIdentity;
         imageViewCreateInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
         imageViewCreateInfo.subresourceRange.levelCount = 1;
         imageViewCreateInfo.subresourceRange.layerCount = 1;
@@ -420,6 +488,19 @@ private:
         return vk::raii::ShaderModule{ device, createInfo };
     }
 
+    void createDescriptorSetLayout() {
+        vk::DescriptorSetLayoutBinding uboLayoutBinding(0, vk::DescriptorType::eUniformBuffer, 1, vk::ShaderStageFlagBits::eVertex, nullptr);
+        vk::DescriptorSetLayoutBinding ssboLayoutBinding(1, vk::DescriptorType::eStorageBuffer, 1, vk::ShaderStageFlagBits::eVertex, nullptr);
+
+        std::array<vk::DescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, ssboLayoutBinding };
+
+        vk::DescriptorSetLayoutCreateInfo layoutInfo{};
+        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+        layoutInfo.pBindings = bindings.data();
+
+        descriptorSetLayout = vk::raii::DescriptorSetLayout(device, layoutInfo);
+    }
+
     void createGraphicsPipeline() {
         vk::PipelineRenderingCreateInfo pipelineRenderingCreateInfo{};
         pipelineRenderingCreateInfo.colorAttachmentCount = 1;
@@ -443,7 +524,14 @@ private:
 
         vk::PipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 
+        auto bindingDescription = Vertex::getBindingDescription();
+        auto attributeDescriptions = Vertex::getAttributeDescriptions();
+
         vk::PipelineVertexInputStateCreateInfo vertexInputInfo{};
+        vertexInputInfo.vertexBindingDescriptionCount = 1;
+        vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+        vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
         vk::PipelineInputAssemblyStateCreateInfo inputAssembly{};
         inputAssembly.topology = vk::PrimitiveTopology::eTriangleList;
@@ -460,7 +548,6 @@ private:
 
         vk::PipelineRasterizationStateCreateInfo rasterizer{};
         rasterizer.cullMode = vk::CullModeFlagBits::eBack;
-        rasterizer.frontFace = vk::FrontFace::eClockwise;
         rasterizer.lineWidth = 1.0f;
 
         vk::PipelineMultisampleStateCreateInfo multisampling{};
@@ -478,6 +565,8 @@ private:
         colorBlending.pAttachments = &colorBlendAttachment;
 
         vk::PipelineLayoutCreateInfo pipelineLayoutInfo{};
+        pipelineLayoutInfo.setLayoutCount = 1;
+        pipelineLayoutInfo.pSetLayouts = &*descriptorSetLayout;
 
         pipelineLayout = vk::raii::PipelineLayout(device, pipelineLayoutInfo);
 
@@ -507,6 +596,208 @@ private:
         // keep old single-command allocation removed: render graph will allocate per-image command buffers
     }
 
+    uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties) {
+        auto memProperties = physicalDevice.getMemoryProperties();
+
+        for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+            if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+                return i;
+            }
+        }
+
+        throw std::runtime_error("failed to find suitable memory type!");
+    }
+
+    void createBuffer(const vk::BufferCreateInfo& bufferInfo, const vk::MemoryPropertyFlags& properties, vk::raii::Buffer& buffer, vk::raii::DeviceMemory& bufferMemory) {
+        buffer = vk::raii::Buffer(device, bufferInfo);
+        vk::MemoryRequirements memRequirements = buffer.getMemoryRequirements();
+        vk::MemoryAllocateInfo allocInfo{};
+        allocInfo.allocationSize = memRequirements.size;
+        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+        bufferMemory = vk::raii::DeviceMemory(device, allocInfo);
+        buffer.bindMemory(*bufferMemory, 0);
+    }
+
+    template<class T>
+    void uploadBuffer(const std::vector<T>& contents, const vk::raii::Buffer& buffer) {
+        vk::BufferCreateInfo stagingInfo{};
+        stagingInfo.size = sizeof(contents[0]) * contents.size();
+        stagingInfo.usage = vk::BufferUsageFlagBits::eTransferSrc;
+
+        vk::raii::Buffer stagingBuffer = nullptr;
+        vk::raii::DeviceMemory stagingBufferMemory = nullptr;
+
+        createBuffer(
+            stagingInfo,
+            vk::MemoryPropertyFlagBits::eHostVisible |
+            vk::MemoryPropertyFlagBits::eHostCoherent,
+            stagingBuffer,
+            stagingBufferMemory);
+
+        void* data = stagingBufferMemory.mapMemory(0, stagingInfo.size);
+        memcpy(data, contents.data(), stagingInfo.size);
+        stagingBufferMemory.unmapMemory();
+
+        vk::CommandBufferAllocateInfo allocInfo{};
+        allocInfo.commandPool = commandPool;
+        allocInfo.level = vk::CommandBufferLevel::ePrimary;
+        allocInfo.commandBufferCount = 1;
+
+        auto commandCopyBuffer = std::move(device.allocateCommandBuffers(allocInfo).front());
+        commandCopyBuffer.begin(vk::CommandBufferBeginInfo{ vk::CommandBufferUsageFlagBits::eOneTimeSubmit });
+        commandCopyBuffer.copyBuffer(stagingBuffer, buffer, vk::BufferCopy(0, 0, stagingInfo.size));
+        commandCopyBuffer.end();
+
+        vk::SubmitInfo submitInfo{};
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &*commandCopyBuffer;
+
+        graphicsQueue.submit(submitInfo, nullptr);
+        graphicsQueue.waitIdle();
+    }
+
+    void createVertexBuffer() {
+        vk::BufferCreateInfo bufferInfo{};
+        bufferInfo.size = sizeof(vertices[0]) * vertices.size();
+        bufferInfo.usage = vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst;
+
+        createBuffer(
+            bufferInfo,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            vertexBuffer,
+            vertexBufferMemory);
+
+        uploadBuffer(vertices, vertexBuffer);
+    }
+
+    void createIndexBuffer() {
+        vk::BufferCreateInfo bufferInfo{};
+        bufferInfo.size = sizeof(indices[0]) * indices.size();
+        bufferInfo.usage = vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst;
+
+        createBuffer(
+            bufferInfo,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            indexBuffer,
+            indexBufferMemory);
+
+        uploadBuffer(indices, indexBuffer);
+    }
+
+    void createIndirectBuffer() {
+        vk::BufferCreateInfo bufferInfo{};
+        bufferInfo.size = sizeof(drawCmd);
+        bufferInfo.usage = vk::BufferUsageFlagBits::eIndirectBuffer | vk::BufferUsageFlagBits::eTransferDst;
+
+        createBuffer(
+            bufferInfo,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            indirectBuffer,
+            indirectBufferMemory);
+
+        uploadBuffer(std::vector<vk::DrawIndexedIndirectCommand>{ drawCmd }, indirectBuffer);
+    }
+
+    void createUniformBuffers() {
+        uniformBuffers.clear();
+        uniformBuffersMemory.clear();
+        uniformBuffersMapped.clear();
+
+        vk::BufferCreateInfo bufferInfo{};
+        bufferInfo.size = sizeof(UniformBufferObject);
+        bufferInfo.usage = vk::BufferUsageFlagBits::eUniformBuffer;
+
+        for (size_t i = 0; i < swapChainImages.size(); i++) {
+            vk::raii::Buffer uniformBuffer = nullptr;
+            vk::raii::DeviceMemory uniformBufferMemory = nullptr;
+            createBuffer(
+                bufferInfo,
+                vk::MemoryPropertyFlagBits::eHostVisible |
+                vk::MemoryPropertyFlagBits::eHostCoherent,
+                uniformBuffer,
+                uniformBufferMemory);
+            uniformBuffers.emplace_back(std::move(uniformBuffer));
+            uniformBuffersMemory.emplace_back(std::move(uniformBufferMemory));
+            uniformBuffersMapped.emplace_back(uniformBuffersMemory[i].mapMemory(0, bufferInfo.size));
+        }
+    }
+
+    void createStorageBuffer() {
+        vk::BufferCreateInfo bufferInfo{};
+        bufferInfo.size = sizeof(StorageBufferObject);
+        bufferInfo.usage = vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferDst;
+
+        createBuffer(
+            bufferInfo,
+            vk::MemoryPropertyFlagBits::eDeviceLocal,
+            storageBuffer,
+            storageBufferMemory);
+
+        StorageBufferObject ssboData{};
+        ssboData.colour = glm::vec3(1.0f, 1.0f, 0.0f);
+
+        uploadBuffer(std::vector<StorageBufferObject>{ssboData}, storageBuffer);
+    }
+
+    void createDescriptorPool() {
+        std::array<vk::DescriptorPoolSize, 2> poolSizes = {
+            vk::DescriptorPoolSize{ vk::DescriptorType::eUniformBuffer, static_cast<uint32_t>(swapChainImages.size()) },
+            vk::DescriptorPoolSize{ vk::DescriptorType::eStorageBuffer, static_cast<uint32_t>(swapChainImages.size()) }
+        };
+
+        vk::DescriptorPoolCreateInfo poolInfo{};
+        poolInfo.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
+        poolInfo.maxSets = static_cast<uint32_t>(swapChainImages.size());
+        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+        poolInfo.pPoolSizes = poolSizes.data();
+
+        descriptorPool = vk::raii::DescriptorPool(device, poolInfo);
+    }
+
+    void createDescriptorSets() {
+        std::vector<vk::DescriptorSetLayout> layouts(swapChainImages.size(), *descriptorSetLayout);
+
+        vk::DescriptorSetAllocateInfo allocInfo{};
+        allocInfo.descriptorPool = descriptorPool;
+        allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
+        allocInfo.pSetLayouts = layouts.data();
+
+        descriptorSets = device.allocateDescriptorSets(allocInfo);
+
+        // storage buffer descriptor info (same buffer for all sets)
+        vk::DescriptorBufferInfo storageBufferInfo{};
+        storageBufferInfo.buffer = storageBuffer;
+        storageBufferInfo.offset = 0;
+        storageBufferInfo.range = sizeof(StorageBufferObject);
+
+        for (size_t i = 0; i < swapChainImages.size(); i++) {
+            vk::DescriptorBufferInfo uboBufferInfo{};
+            uboBufferInfo.buffer = uniformBuffers[i];
+            uboBufferInfo.offset = 0;
+            uboBufferInfo.range = sizeof(UniformBufferObject);
+
+            vk::WriteDescriptorSet uboWrite{};
+            uboWrite.dstSet = descriptorSets[i];
+            uboWrite.dstBinding = 0;
+            uboWrite.dstArrayElement = 0;
+            uboWrite.descriptorCount = 1;
+            uboWrite.descriptorType = vk::DescriptorType::eUniformBuffer;
+            uboWrite.pBufferInfo = &uboBufferInfo;
+
+            device.updateDescriptorSets(uboWrite, {});
+
+            vk::WriteDescriptorSet ssboWrite{};
+            ssboWrite.dstSet = descriptorSets[i];
+            ssboWrite.dstBinding = 1;
+            ssboWrite.dstArrayElement = 0;
+            ssboWrite.descriptorCount = 1;
+            ssboWrite.descriptorType = vk::DescriptorType::eStorageBuffer;
+            ssboWrite.pBufferInfo = &storageBufferInfo;
+
+            device.updateDescriptorSets(ssboWrite, {});
+        }
+    }
+
     // New: create and initialize the RenderGraph and add the passes used by the app
     void initRenderGraph()
     {
@@ -526,6 +817,8 @@ private:
         // record the same rendering commands previously inside recordCommandBuffer (beginRendering, bind pipeline, draw, endRendering)
         mainPass.recordFunc = [this](vk::raii::CommandBuffer& cmd, uint32_t imageIndex)
             {
+                updateUniformBuffer(imageIndex);
+
                 vk::ClearValue clearColor = vk::ClearColorValue(0.0f, 0.0f, 0.0f, 1.0f);
                 vk::RenderingAttachmentInfo attachmentInfo{};
                 attachmentInfo.imageView = swapChainImageViews[imageIndex];
@@ -543,13 +836,16 @@ private:
                 renderingInfo.pColorAttachments = &attachmentInfo;
 
                 cmd.beginRendering(renderingInfo);
+                cmd.bindVertexBuffers(0, *vertexBuffer, { 0 });
+                cmd.bindIndexBuffer(*indexBuffer, 0, vk::IndexType::eUint32);
+                cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineLayout, 0, *descriptorSets[imageIndex], nullptr);
 
                 cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, graphicsPipeline);
 
                 cmd.setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), 0.0f, 1.0f));
                 cmd.setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), swapChainExtent));
 
-                cmd.draw(3, 1, 0, 0);
+                cmd.drawIndexedIndirect(*indirectBuffer, 0, 1, static_cast<uint32_t>(sizeof(VkDrawIndexedIndirectCommand)));
 
                 cmd.endRendering();
             };
@@ -571,6 +867,21 @@ private:
 
         // finally initialize (allocates per-image command buffers and per-frame sync objects)
         renderGraph->init();
+    }
+
+    void updateUniformBuffer(uint32_t currentImage) {
+        static auto startTime = std::chrono::high_resolution_clock::now();
+
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+        UniformBufferObject ubo{};
+        ubo.model = rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        ubo.view = lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        ubo.proj = glm::perspective(glm::radians(45.0f), static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), 0.1f, 10.0f);
+        ubo.proj[1][1] *= -1;
+
+        memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
     }
 
     // removed transitionImageLayout and recordCommandBuffer methods - RenderGraph now handles transitions + per-pass recording
