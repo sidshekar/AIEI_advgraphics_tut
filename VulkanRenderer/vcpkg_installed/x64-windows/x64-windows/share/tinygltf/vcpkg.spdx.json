@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/tinygltf-x64-windows-2.9.3-1b659b31-e35d-464c-ae98-16dd30a77d52",
-  "name": "tinygltf:x64-windows@2.9.3 d7a4f76f2c6cda3fffb27103c2f3a81b650c2e3cf721d4c9d50fb8e6f0f4deec",
+  "documentNamespace": "https://spdx.org/spdxdocs/tinygltf-x64-windows-2.9.3-30bd11bd-96ae-4087-b725-78a593231f6b",
+  "name": "tinygltf:x64-windows@2.9.3 a2403cbb093415572379c77d2052b31ac059514fd00cdb04f7889e5f5ab8dee2",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-2025-07-21-d4b65a2b83ae6c3526acd1c6f3b51aff2a884533"
+      "Tool: vcpkg-2024-12-09-1005b78fa1bf1dde1a20c2734cba4ea61ca94d9a"
     ],
-    "created": "2025-10-29T00:24:49Z"
+    "created": "2025-12-04T06:59:07Z"
   },
   "relationships": [
     {
@@ -41,11 +41,6 @@
       "spdxElementId": "SPDXRef-file-1",
       "relationshipType": "CONTAINED_BY",
       "relatedSpdxElement": "SPDXRef-port"
-    },
-    {
-      "spdxElementId": "SPDXRef-file-1",
-      "relationshipType": "DEPENDENCY_MANIFEST_OF",
-      "relatedSpdxElement": "SPDXRef-port"
     }
   ],
   "packages": [
@@ -64,7 +59,7 @@
     {
       "name": "tinygltf:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "d7a4f76f2c6cda3fffb27103c2f3a81b650c2e3cf721d4c9d50fb8e6f0f4deec",
+      "versionInfo": "a2403cbb093415572379c77d2052b31ac059514fd00cdb04f7889e5f5ab8dee2",
       "downloadLocation": "NONE",
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
@@ -88,7 +83,7 @@
   ],
   "files": [
     {
-      "fileName": "./portfile.cmake",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/79294fe8043f1405ad2595c7e4847e597951e3b5/portfile.cmake",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
@@ -100,7 +95,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./vcpkg.json",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/79294fe8043f1405ad2595c7e4847e597951e3b5/vcpkg.json",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {

@@ -1,5 +1,6 @@
-﻿#include <iostream>
 #include <cstdlib>
+#include <fstream>
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 
@@ -10,24 +11,26 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
+#include "RenderGraph.hpp"
+
 #undef max
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 
 const std::vector<char const*> validationLayers = {
-    "VK_LAYER_KHRONOS_validation", 
+    "VK_LAYER_KHRONOS_validation"
 };
 
 const std::vector<const char*> deviceExtensions = {
     vk::KHRSwapchainExtensionName,
-       // VK_KHR_SPIRV_1_4_EXTENSION_NAME,//vk::KHRSpirv14ExtensionName,,
-        //VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME,//vk::KHRSynchronization2ExtensionName,
-        //VK_KHR_CREATE_RENDERPASS_2_EXTENSION_NAME,//vk::KHRCreateRenderpass2ExtensionName
+    //vk::KHRSpirv14ExtensionName,
+    //vk::KHRSynchronization2ExtensionName,
+    //vk::KHRCreateRenderpass2ExtensionName
 };
 
 #ifdef NDEBUG
-constexpr bool enableValidationLayers = true;
+constexpr bool enableValidationLayers = false;
 #else
 constexpr bool enableValidationLayers = true;
 #endif
@@ -63,6 +66,18 @@ private:
     vk::raii::SwapchainKHR swapChain = nullptr;
     std::vector<vk::Image> swapChainImages{};
     std::vector<vk::raii::ImageView> swapChainImageViews{};
+    vk::raii::PipelineLayout pipelineLayout = nullptr;
+    vk::raii::Pipeline graphicsPipeline = nullptr;
+    vk::raii::CommandPool commandPool = nullptr;
+
+    // Removed old single command buffer and sync objects:
+    // vk::raii::CommandBuffer commandBuffer = nullptr;
+    // vk::raii::Semaphore presentCompleteSemaphore = nullptr;
+    // vk::raii::Semaphore renderFinishedSemaphore = nullptr;
+    // vk::raii::Fence drawFence = nullptr;
+
+    // New: render graph that encapsulates per-frame sync, command buffers and simple pass graph
+    std::unique_ptr<RenderGraph> renderGraph;
 
     void initWindow() {
         glfwInit();
@@ -80,6 +95,11 @@ private:
         createLogicalDevice();
         createSwapChain();
         createImageViews();
+        createGraphicsPipeline();
+        createCommandPool();
+
+        // create and initialize the render graph (allocates per-image command-buffers and sync)
+        initRenderGraph();
     }
 
     void createInstance() {
@@ -88,7 +108,7 @@ private:
         appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         appInfo.pEngineName = "Vulkan Renderer";
         appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.apiVersion = vk::ApiVersion;
+        appInfo.apiVersion = vk::ApiVersion13;
 
         // Get the required layers
         std::vector<char const*> requiredLayers{};
@@ -186,6 +206,7 @@ private:
         vk::PhysicalDeviceFeatures2 features2{}; // vk::PhysicalDeviceFeatures2 (empty for now)
         vk::PhysicalDeviceVulkan13Features vulkan13Features{};
         vulkan13Features.dynamicRendering = true; // Enable dynamic rendering from Vulkan 1.3
+        vulkan13Features.synchronization2 = true; // enable synchronization2 from the extension
         vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT extDynamicStateFeatures{};
         extDynamicStateFeatures.extendedDynamicState = true; // Enable extended dynamic state from the extension
 
@@ -295,9 +316,9 @@ private:
         swapChainCreateInfo.imageArrayLayers = 1; // keep 1 unless rendering for VR
         swapChainCreateInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment; // we are rendering to image directly
         swapChainCreateInfo.preTransform = surfaceCapabilities.currentTransform;  // don't apply further transformation
-        swapChainCreateInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque; // don�t blend with other windows in the system
+        swapChainCreateInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque; // don?t blend with other windows in the system
         swapChainCreateInfo.presentMode = chooseSwapPresentMode(availablePresentModes);
-        swapChainCreateInfo.clipped = true;  // don�t update the pixels that are obscured
+        swapChainCreateInfo.clipped = true;  // don?t update the pixels that are obscured
 
         uint32_t queueFamilyIndices[] = { graphicsFamily, presentFamily };
 
@@ -375,10 +396,199 @@ private:
         }
     }
 
+    static std::vector<char> readFile(const std::string& filename) {
+        std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+        if (!file.is_open()) {
+            throw std::runtime_error("failed to open file!");
+        }
+
+        std::vector<char> buffer(file.tellg());
+
+        file.seekg(0, std::ios::beg);
+        file.read(buffer.data(), static_cast<std::streamsize>(buffer.size()));
+        file.close();
+
+        return buffer;
+    }
+
+    vk::raii::ShaderModule createShaderModule(const std::vector<char>& code) const {
+        vk::ShaderModuleCreateInfo createInfo{};
+        createInfo.codeSize = code.size() * sizeof(char);
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+        return vk::raii::ShaderModule{ device, createInfo };
+    }
+
+    void createGraphicsPipeline() {
+        vk::PipelineRenderingCreateInfo pipelineRenderingCreateInfo{};
+        pipelineRenderingCreateInfo.colorAttachmentCount = 1;
+        pipelineRenderingCreateInfo.pColorAttachmentFormats = &swapChainSurfaceFormat.format;
+
+        auto fragCode = readFile("Shaders/main.frag.spv");
+        auto vertCode = readFile("Shaders/main.vert.spv");
+
+        auto fragModule = createShaderModule(fragCode);
+        auto vertModule = createShaderModule(vertCode);
+
+        vk::PipelineShaderStageCreateInfo fragShaderStageInfo{};
+        fragShaderStageInfo.stage = vk::ShaderStageFlagBits::eFragment;
+        fragShaderStageInfo.module = fragModule;
+        fragShaderStageInfo.pName = "main";
+
+        vk::PipelineShaderStageCreateInfo vertShaderStageInfo{};
+        vertShaderStageInfo.stage = vk::ShaderStageFlagBits::eVertex;
+        vertShaderStageInfo.module = vertModule;
+        vertShaderStageInfo.pName = "main";
+
+        vk::PipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+
+        vk::PipelineVertexInputStateCreateInfo vertexInputInfo{};
+
+        vk::PipelineInputAssemblyStateCreateInfo inputAssembly{};
+        inputAssembly.topology = vk::PrimitiveTopology::eTriangleList;
+
+        std::vector<vk::DynamicState> dynamicStates = {
+            vk::DynamicState::eViewport,
+            vk::DynamicState::eScissor
+        };
+        vk::PipelineDynamicStateCreateInfo dynamicState({}, dynamicStates.size(), dynamicStates.data());
+
+        vk::PipelineViewportStateCreateInfo viewportState{};
+        viewportState.viewportCount = 1;
+        viewportState.scissorCount = 1;
+
+        vk::PipelineRasterizationStateCreateInfo rasterizer{};
+        rasterizer.cullMode = vk::CullModeFlagBits::eBack;
+        rasterizer.frontFace = vk::FrontFace::eClockwise;
+        rasterizer.lineWidth = 1.0f;
+
+        vk::PipelineMultisampleStateCreateInfo multisampling{};
+        multisampling.rasterizationSamples = vk::SampleCountFlagBits::e1;
+
+        vk::PipelineColorBlendAttachmentState colorBlendAttachment{};
+        colorBlendAttachment.colorWriteMask =
+            vk::ColorComponentFlagBits::eR |
+            vk::ColorComponentFlagBits::eG |
+            vk::ColorComponentFlagBits::eB |
+            vk::ColorComponentFlagBits::eA;
+
+        vk::PipelineColorBlendStateCreateInfo colorBlending{};
+        colorBlending.attachmentCount = 1;
+        colorBlending.pAttachments = &colorBlendAttachment;
+
+        vk::PipelineLayoutCreateInfo pipelineLayoutInfo{};
+
+        pipelineLayout = vk::raii::PipelineLayout(device, pipelineLayoutInfo);
+
+        vk::GraphicsPipelineCreateInfo pipelineInfo{};
+        pipelineInfo.pNext = &pipelineRenderingCreateInfo;
+        pipelineInfo.stageCount = 2;
+        pipelineInfo.pStages = shaderStages;
+        pipelineInfo.pVertexInputState = &vertexInputInfo;
+        pipelineInfo.pInputAssemblyState = &inputAssembly;
+        pipelineInfo.pDynamicState = &dynamicState;
+        pipelineInfo.pViewportState = &viewportState;
+        pipelineInfo.pRasterizationState = &rasterizer;
+        pipelineInfo.pMultisampleState = &multisampling;
+        pipelineInfo.pColorBlendState = &colorBlending;
+        pipelineInfo.layout = pipelineLayout;
+
+        graphicsPipeline = vk::raii::Pipeline(device, nullptr, pipelineInfo);
+    }
+
+    void createCommandPool() {
+        vk::CommandPoolCreateInfo poolInfo{};
+        poolInfo.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+        poolInfo.queueFamilyIndex = graphicsFamily;
+
+        commandPool = vk::raii::CommandPool(device, poolInfo);
+
+        // keep old single-command allocation removed: render graph will allocate per-image command buffers
+    }
+
+    // New: create and initialize the RenderGraph and add the passes used by the app
+    void initRenderGraph()
+    {
+        // construct the render graph (holds references, does NOT copy objects)
+        renderGraph.reset(new RenderGraph(device, swapChain, graphicsQueue, presentQueue, commandPool, swapChainImageViews, swapChainExtent));
+
+        // Main rendering pass: transition Undefined -> ColorAttachmentOptimal and record in the pass
+        RenderPassNode mainPass{};
+        mainPass.name = "MainPass";
+        mainPass.oldLayout = vk::ImageLayout::eUndefined;
+        mainPass.newLayout = vk::ImageLayout::eColorAttachmentOptimal;
+        mainPass.srcAccessMask = {}; // from undefined
+        mainPass.dstAccessMask = vk::AccessFlagBits2::eColorAttachmentWrite;
+        mainPass.srcStageMask = vk::PipelineStageFlagBits2::eTopOfPipe;
+        mainPass.dstStageMask = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
+
+        // record the same rendering commands previously inside recordCommandBuffer (beginRendering, bind pipeline, draw, endRendering)
+        mainPass.recordFunc = [this](vk::raii::CommandBuffer& cmd, uint32_t imageIndex)
+            {
+                vk::ClearValue clearColor = vk::ClearColorValue(0.0f, 0.0f, 0.0f, 1.0f);
+                vk::RenderingAttachmentInfo attachmentInfo{};
+                attachmentInfo.imageView = swapChainImageViews[imageIndex];
+                attachmentInfo.imageLayout = vk::ImageLayout::eColorAttachmentOptimal;
+                attachmentInfo.loadOp = vk::AttachmentLoadOp::eClear;
+                attachmentInfo.storeOp = vk::AttachmentStoreOp::eStore;
+                attachmentInfo.clearValue = clearColor;
+
+                vk::RenderingInfo renderingInfo{};
+                renderingInfo.renderArea.offset.x = 0;
+                renderingInfo.renderArea.offset.y = 0;
+                renderingInfo.renderArea.extent = swapChainExtent;
+                renderingInfo.layerCount = 1;
+                renderingInfo.colorAttachmentCount = 1;
+                renderingInfo.pColorAttachments = &attachmentInfo;
+
+                cmd.beginRendering(renderingInfo);
+
+                cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, graphicsPipeline);
+
+                cmd.setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), 0.0f, 1.0f));
+                cmd.setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), swapChainExtent));
+
+                cmd.draw(3, 1, 0, 0);
+
+                cmd.endRendering();
+            };
+
+        renderGraph->addPass(mainPass);
+
+        // Final transition pass: move from color attachment -> present.
+        RenderPassNode presentTransition{};
+        presentTransition.name = "PresentTransition";
+        presentTransition.oldLayout = vk::ImageLayout::eColorAttachmentOptimal;
+        presentTransition.newLayout = vk::ImageLayout::ePresentSrcKHR;
+        presentTransition.srcAccessMask = vk::AccessFlagBits2::eColorAttachmentWrite;
+        presentTransition.dstAccessMask = {};
+        presentTransition.srcStageMask = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
+        presentTransition.dstStageMask = vk::PipelineStageFlagBits2::eBottomOfPipe;
+        presentTransition.recordFunc = nullptr; // no recording, just a layout transition
+
+        renderGraph->addPass(presentTransition);
+
+        // finally initialize (allocates per-image command buffers and per-frame sync objects)
+        renderGraph->init();
+    }
+
+    // removed transitionImageLayout and recordCommandBuffer methods - RenderGraph now handles transitions + per-pass recording
+
+    // removed createSyncObjects - RenderGraph manages per-frame sync
+
+    void drawFrame() {
+        // delegate frame orchestration to the render graph
+        renderGraph->executeFrame();
+    }
+
     void mainLoop() {
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
+            drawFrame();
         }
+
+        device.waitIdle();
     }
 
     void cleanup() {
@@ -394,7 +604,6 @@ int main() {
         app.run();
     }
     catch (const std::exception& e) {
-        std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
 

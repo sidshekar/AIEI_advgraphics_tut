@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/vulkan-headers-x64-windows-1.3.290.0#1-b1460277-b75c-46cb-b31b-f9d18dcdf375",
-  "name": "vulkan-headers:x64-windows@1.3.290.0#1 9162bc8ad82eae0ea7fb4eee008b31718976c7b43ce9d1cc8ce3b37720a88395",
+  "documentNamespace": "https://spdx.org/spdxdocs/vulkan-headers-x64-windows-1.3.290.0#1-396342d1-da70-406f-9178-cf13c49dd9b6",
+  "name": "vulkan-headers:x64-windows@1.3.290.0#1 dc355e1a7e0b901b08fa9420a288099e0992d2c3604373ac4c81e8b5a41ac1be",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-2025-07-21-d4b65a2b83ae6c3526acd1c6f3b51aff2a884533"
+      "Tool: vcpkg-2024-12-09-1005b78fa1bf1dde1a20c2734cba4ea61ca94d9a"
     ],
-    "created": "2025-10-29T00:38:34Z"
+    "created": "2025-12-04T06:59:15Z"
   },
   "relationships": [
     {
@@ -51,11 +51,6 @@
       "spdxElementId": "SPDXRef-file-2",
       "relationshipType": "CONTAINED_BY",
       "relatedSpdxElement": "SPDXRef-port"
-    },
-    {
-      "spdxElementId": "SPDXRef-file-2",
-      "relationshipType": "DEPENDENCY_MANIFEST_OF",
-      "relatedSpdxElement": "SPDXRef-port"
     }
   ],
   "packages": [
@@ -65,7 +60,7 @@
       "versionInfo": "1.3.290.0#1",
       "downloadLocation": "git+https://github.com/microsoft/vcpkg@3335b4bdf60e3c09fafd8541329aba7c275c5a1a",
       "homepage": "https://github.com/KhronosGroup/Vulkan-Headers",
-      "licenseConcluded": "(Apache-2.0 OR MIT)",
+      "licenseConcluded": "Apache-2.0 OR MIT",
       "licenseDeclared": "NOASSERTION",
       "copyrightText": "NOASSERTION",
       "description": "Vulkan header files and API registry",
@@ -74,9 +69,9 @@
     {
       "name": "vulkan-headers:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "9162bc8ad82eae0ea7fb4eee008b31718976c7b43ce9d1cc8ce3b37720a88395",
+      "versionInfo": "dc355e1a7e0b901b08fa9420a288099e0992d2c3604373ac4c81e8b5a41ac1be",
       "downloadLocation": "NONE",
-      "licenseConcluded": "(Apache-2.0 OR MIT)",
+      "licenseConcluded": "Apache-2.0 OR MIT",
       "licenseDeclared": "NOASSERTION",
       "copyrightText": "NOASSERTION",
       "comment": "This is a binary package built by vcpkg."
@@ -98,7 +93,7 @@
   ],
   "files": [
     {
-      "fileName": "./portfile.cmake",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/3335b4bdf60e3c09fafd8541329aba7c275c5a1a/portfile.cmake",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
@@ -110,7 +105,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./usage",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/3335b4bdf60e3c09fafd8541329aba7c275c5a1a/usage",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {
@@ -122,7 +117,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./vcpkg.json",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/3335b4bdf60e3c09fafd8541329aba7c275c5a1a/vcpkg.json",
       "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {

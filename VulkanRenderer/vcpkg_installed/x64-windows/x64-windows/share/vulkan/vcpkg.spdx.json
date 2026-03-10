@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/vulkan-x64-windows-2023-12-17-fb21f460-863f-44fc-ab34-e8c3a75fe3b2",
-  "name": "vulkan:x64-windows@2023-12-17 39c5ce83011ca6c23a9a63065189369bb84a4b71bc2c342ac2ac292340221a7a",
+  "documentNamespace": "https://spdx.org/spdxdocs/vulkan-x64-windows-2023-12-17-f16aa4c2-0344-4b5a-b3f5-2ea6f88f7a9e",
+  "name": "vulkan:x64-windows@2023-12-17 5360086bbb7fc7da3f2d5841a01e7a8fa339853680564510402c214963cbd44d",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-2025-07-21-d4b65a2b83ae6c3526acd1c6f3b51aff2a884533"
+      "Tool: vcpkg-2024-12-09-1005b78fa1bf1dde1a20c2734cba4ea61ca94d9a"
     ],
-    "created": "2025-10-29T00:38:43Z"
+    "created": "2025-12-04T06:59:34Z"
   },
   "relationships": [
     {
@@ -68,11 +68,6 @@
       "relatedSpdxElement": "SPDXRef-port"
     },
     {
-      "spdxElementId": "SPDXRef-file-3",
-      "relationshipType": "DEPENDENCY_MANIFEST_OF",
-      "relatedSpdxElement": "SPDXRef-port"
-    },
-    {
       "spdxElementId": "SPDXRef-file-4",
       "relationshipType": "CONTAINED_BY",
       "relatedSpdxElement": "SPDXRef-port"
@@ -84,7 +79,7 @@
       "SPDXID": "SPDXRef-port",
       "versionInfo": "2023-12-17",
       "downloadLocation": "git+https://github.com/microsoft/vcpkg@3e8d64ec799440b97c7151f97dd00a53e8e1b5ea",
-      "licenseConcluded": "LicenseRef-vcpkg-null",
+      "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
       "copyrightText": "NOASSERTION",
       "description": "A stub package that ensures that Vulkan headers and a loader are available.\nOn Android, the NDK provides a loader at API level 24 or higher.",
@@ -93,9 +88,9 @@
     {
       "name": "vulkan:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "39c5ce83011ca6c23a9a63065189369bb84a4b71bc2c342ac2ac292340221a7a",
+      "versionInfo": "5360086bbb7fc7da3f2d5841a01e7a8fa339853680564510402c214963cbd44d",
       "downloadLocation": "NONE",
-      "licenseConcluded": "LicenseRef-vcpkg-null",
+      "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
       "copyrightText": "NOASSERTION",
       "comment": "This is a binary package built by vcpkg."
@@ -103,7 +98,7 @@
   ],
   "files": [
     {
-      "fileName": "./CMakeLists.txt",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/3e8d64ec799440b97c7151f97dd00a53e8e1b5ea/CMakeLists.txt",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
@@ -115,7 +110,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./portfile.cmake",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/3e8d64ec799440b97c7151f97dd00a53e8e1b5ea/portfile.cmake",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {
@@ -127,7 +122,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./usage",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/3e8d64ec799440b97c7151f97dd00a53e8e1b5ea/usage",
       "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {
@@ -139,7 +134,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./vcpkg.json",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/3e8d64ec799440b97c7151f97dd00a53e8e1b5ea/vcpkg.json",
       "SPDXID": "SPDXRef-file-3",
       "checksums": [
         {
@@ -151,7 +146,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./vulkan-result.cmake.in",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/3e8d64ec799440b97c7151f97dd00a53e8e1b5ea/vulkan-result.cmake.in",
       "SPDXID": "SPDXRef-file-4",
       "checksums": [
         {

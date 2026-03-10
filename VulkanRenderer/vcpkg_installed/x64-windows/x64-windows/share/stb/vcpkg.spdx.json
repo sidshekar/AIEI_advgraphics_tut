@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/stb-x64-windows-2024-07-29#1-09ce478e-cf33-44d6-bf7b-b33ce1ffaaa6",
-  "name": "stb:x64-windows@2024-07-29#1 ec47e48e510d5c33e3b44eb5fe15ecda1e079fa9c7a97954968fb0bb04b86d24",
+  "documentNamespace": "https://spdx.org/spdxdocs/stb-x64-windows-2024-07-29#1-c1023efa-af7b-4227-8d08-496341c49d64",
+  "name": "stb:x64-windows@2024-07-29#1 583b63c722afe7270ca5c6a201840fbb6f79b972257e8c540ebea2d2410023c8",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-2025-07-21-d4b65a2b83ae6c3526acd1c6f3b51aff2a884533"
+      "Tool: vcpkg-2024-12-09-1005b78fa1bf1dde1a20c2734cba4ea61ca94d9a"
     ],
-    "created": "2025-10-29T00:24:47Z"
+    "created": "2025-12-04T06:59:04Z"
   },
   "relationships": [
     {
@@ -71,11 +71,6 @@
       "spdxElementId": "SPDXRef-file-4",
       "relationshipType": "CONTAINED_BY",
       "relatedSpdxElement": "SPDXRef-port"
-    },
-    {
-      "spdxElementId": "SPDXRef-file-4",
-      "relationshipType": "DEPENDENCY_MANIFEST_OF",
-      "relatedSpdxElement": "SPDXRef-port"
     }
   ],
   "packages": [
@@ -85,7 +80,7 @@
       "versionInfo": "2024-07-29#1",
       "downloadLocation": "git+https://github.com/microsoft/vcpkg@c362152d1d02973e7b1ce777960f8a6876656560",
       "homepage": "https://github.com/nothings/stb",
-      "licenseConcluded": "(MIT OR CC-PDDC)",
+      "licenseConcluded": "MIT OR CC-PDDC",
       "licenseDeclared": "NOASSERTION",
       "copyrightText": "NOASSERTION",
       "description": "public domain header-only libraries",
@@ -94,9 +89,9 @@
     {
       "name": "stb:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "ec47e48e510d5c33e3b44eb5fe15ecda1e079fa9c7a97954968fb0bb04b86d24",
+      "versionInfo": "583b63c722afe7270ca5c6a201840fbb6f79b972257e8c540ebea2d2410023c8",
       "downloadLocation": "NONE",
-      "licenseConcluded": "(MIT OR CC-PDDC)",
+      "licenseConcluded": "MIT OR CC-PDDC",
       "licenseDeclared": "NOASSERTION",
       "copyrightText": "NOASSERTION",
       "comment": "This is a binary package built by vcpkg."
@@ -118,7 +113,7 @@
   ],
   "files": [
     {
-      "fileName": "./FindStb.cmake",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/c362152d1d02973e7b1ce777960f8a6876656560/FindStb.cmake",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
@@ -130,7 +125,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./portfile.cmake",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/c362152d1d02973e7b1ce777960f8a6876656560/portfile.cmake",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {
@@ -142,7 +137,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./usage",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/c362152d1d02973e7b1ce777960f8a6876656560/usage",
       "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {
@@ -154,7 +149,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./vcpkg-cmake-wrapper.cmake",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/c362152d1d02973e7b1ce777960f8a6876656560/vcpkg-cmake-wrapper.cmake",
       "SPDXID": "SPDXRef-file-3",
       "checksums": [
         {
@@ -166,7 +161,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./vcpkg.json",
+      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/c362152d1d02973e7b1ce777960f8a6876656560/vcpkg.json",
       "SPDXID": "SPDXRef-file-4",
       "checksums": [
         {
