@@ -33,3 +33,5 @@ for %%F in (*.hlsl) do (
 )
 
 echo Done.
+
+pause

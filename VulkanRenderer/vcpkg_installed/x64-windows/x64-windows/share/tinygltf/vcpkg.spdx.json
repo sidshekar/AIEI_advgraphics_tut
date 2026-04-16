@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/tinygltf-x64-windows-2.9.3-30bd11bd-96ae-4087-b725-78a593231f6b",
-  "name": "tinygltf:x64-windows@2.9.3 a2403cbb093415572379c77d2052b31ac059514fd00cdb04f7889e5f5ab8dee2",
+  "documentNamespace": "https://spdx.org/spdxdocs/tinygltf-x64-windows-2.9.3-08e77704-6b90-46b6-aaa5-d4eba6a69162",
+  "name": "tinygltf:x64-windows@2.9.3 92e663c88bd805874a1584e90dd5134adaf96a7f94c674a5ed4dbe04b6d3f264",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-2024-12-09-1005b78fa1bf1dde1a20c2734cba4ea61ca94d9a"
+      "Tool: vcpkg-2025-11-19-da1f056dc0775ac651bea7e3fbbf4066146a55f3"
     ],
-    "created": "2025-12-04T06:59:07Z"
+    "created": "2026-04-15T05:15:14Z"
   },
   "relationships": [
     {
@@ -20,27 +20,32 @@
     {
       "spdxElementId": "SPDXRef-port",
       "relationshipType": "CONTAINS",
-      "relatedSpdxElement": "SPDXRef-file-0"
+      "relatedSpdxElement": "SPDXRef-port-file-0"
     },
     {
       "spdxElementId": "SPDXRef-port",
       "relationshipType": "CONTAINS",
-      "relatedSpdxElement": "SPDXRef-file-1"
+      "relatedSpdxElement": "SPDXRef-port-file-1"
+    },
+    {
+      "spdxElementId": "SPDXRef-port-file-1",
+      "relationshipType": "DEPENDENCY_MANIFEST_OF",
+      "relatedSpdxElement": "SPDXRef-port"
     },
     {
       "spdxElementId": "SPDXRef-binary",
-      "relationshipType": "GENERATED_FROM",
-      "relatedSpdxElement": "SPDXRef-port"
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-binary-file-0"
     },
     {
-      "spdxElementId": "SPDXRef-file-0",
-      "relationshipType": "CONTAINED_BY",
-      "relatedSpdxElement": "SPDXRef-port"
+      "spdxElementId": "SPDXRef-binary",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-binary-file-1"
     },
     {
-      "spdxElementId": "SPDXRef-file-1",
-      "relationshipType": "CONTAINED_BY",
-      "relatedSpdxElement": "SPDXRef-port"
+      "spdxElementId": "SPDXRef-binary",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-binary-file-2"
     }
   ],
   "packages": [
@@ -59,7 +64,7 @@
     {
       "name": "tinygltf:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "a2403cbb093415572379c77d2052b31ac059514fd00cdb04f7889e5f5ab8dee2",
+      "versionInfo": "92e663c88bd805874a1584e90dd5134adaf96a7f94c674a5ed4dbe04b6d3f264",
       "downloadLocation": "NONE",
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
@@ -83,8 +88,8 @@
   ],
   "files": [
     {
-      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/79294fe8043f1405ad2595c7e4847e597951e3b5/portfile.cmake",
-      "SPDXID": "SPDXRef-file-0",
+      "fileName": "./portfile.cmake",
+      "SPDXID": "SPDXRef-port-file-0",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -95,12 +100,48 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/79294fe8043f1405ad2595c7e4847e597951e3b5/vcpkg.json",
-      "SPDXID": "SPDXRef-file-1",
+      "fileName": "./vcpkg.json",
+      "SPDXID": "SPDXRef-port-file-1",
       "checksums": [
         {
           "algorithm": "SHA256",
           "checksumValue": "84f3d995e9d2d2fce232487760cbd48d413af6ea307c79988b10a0e29990383e"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./BUILD_INFO",
+      "SPDXID": "SPDXRef-binary-file-0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5e7f821ab4eb804deb535baa7b41edca682d0303cf21a91908c98d5c9a7dcf4d"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./include/tiny_gltf.h",
+      "SPDXID": "SPDXRef-binary-file-1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "88c995c13668b0d8e97b0b691c36d9beabc011ae5e764b2315e68867fe149fbd"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./share/tinygltf/copyright",
+      "SPDXID": "SPDXRef-binary-file-2",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2ae461f8c8b78ed77c14e9c3b7e353ba277e44cb3dbfb5a6d380f76f2ae081a2"
         }
       ],
       "licenseConcluded": "NOASSERTION",

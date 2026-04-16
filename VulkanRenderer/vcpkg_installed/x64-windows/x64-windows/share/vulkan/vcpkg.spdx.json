@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/vulkan-x64-windows-2023-12-17-f16aa4c2-0344-4b5a-b3f5-2ea6f88f7a9e",
-  "name": "vulkan:x64-windows@2023-12-17 5360086bbb7fc7da3f2d5841a01e7a8fa339853680564510402c214963cbd44d",
+  "documentNamespace": "https://spdx.org/spdxdocs/vulkan-x64-windows-2023-12-17-4de1fb98-9033-4ae4-838a-a30e05a08304",
+  "name": "vulkan:x64-windows@2023-12-17 b772e341bd8e747391effe17693e073999612a9996b193c1fb631eaa06adc4b9",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-2024-12-09-1005b78fa1bf1dde1a20c2734cba4ea61ca94d9a"
+      "Tool: vcpkg-2025-11-19-da1f056dc0775ac651bea7e3fbbf4066146a55f3"
     ],
-    "created": "2025-12-04T06:59:34Z"
+    "created": "2026-04-15T05:15:27Z"
   },
   "relationships": [
     {
@@ -20,57 +20,57 @@
     {
       "spdxElementId": "SPDXRef-port",
       "relationshipType": "CONTAINS",
-      "relatedSpdxElement": "SPDXRef-file-0"
+      "relatedSpdxElement": "SPDXRef-port-file-0"
     },
     {
       "spdxElementId": "SPDXRef-port",
       "relationshipType": "CONTAINS",
-      "relatedSpdxElement": "SPDXRef-file-1"
+      "relatedSpdxElement": "SPDXRef-port-file-1"
     },
     {
       "spdxElementId": "SPDXRef-port",
       "relationshipType": "CONTAINS",
-      "relatedSpdxElement": "SPDXRef-file-2"
+      "relatedSpdxElement": "SPDXRef-port-file-2"
     },
     {
       "spdxElementId": "SPDXRef-port",
       "relationshipType": "CONTAINS",
-      "relatedSpdxElement": "SPDXRef-file-3"
+      "relatedSpdxElement": "SPDXRef-port-file-3"
+    },
+    {
+      "spdxElementId": "SPDXRef-port-file-3",
+      "relationshipType": "DEPENDENCY_MANIFEST_OF",
+      "relatedSpdxElement": "SPDXRef-port"
     },
     {
       "spdxElementId": "SPDXRef-port",
       "relationshipType": "CONTAINS",
-      "relatedSpdxElement": "SPDXRef-file-4"
+      "relatedSpdxElement": "SPDXRef-port-file-4"
     },
     {
       "spdxElementId": "SPDXRef-binary",
-      "relationshipType": "GENERATED_FROM",
-      "relatedSpdxElement": "SPDXRef-port"
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-binary-file-0"
     },
     {
-      "spdxElementId": "SPDXRef-file-0",
-      "relationshipType": "CONTAINED_BY",
-      "relatedSpdxElement": "SPDXRef-port"
+      "spdxElementId": "SPDXRef-binary",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-binary-file-1"
     },
     {
-      "spdxElementId": "SPDXRef-file-1",
-      "relationshipType": "CONTAINED_BY",
-      "relatedSpdxElement": "SPDXRef-port"
+      "spdxElementId": "SPDXRef-binary",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-binary-file-2"
     },
     {
-      "spdxElementId": "SPDXRef-file-2",
-      "relationshipType": "CONTAINED_BY",
-      "relatedSpdxElement": "SPDXRef-port"
+      "spdxElementId": "SPDXRef-binary",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-binary-file-3"
     },
     {
-      "spdxElementId": "SPDXRef-file-3",
-      "relationshipType": "CONTAINED_BY",
-      "relatedSpdxElement": "SPDXRef-port"
-    },
-    {
-      "spdxElementId": "SPDXRef-file-4",
-      "relationshipType": "CONTAINED_BY",
-      "relatedSpdxElement": "SPDXRef-port"
+      "spdxElementId": "SPDXRef-binary",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-binary-file-4"
     }
   ],
   "packages": [
@@ -79,7 +79,7 @@
       "SPDXID": "SPDXRef-port",
       "versionInfo": "2023-12-17",
       "downloadLocation": "git+https://github.com/microsoft/vcpkg@3e8d64ec799440b97c7151f97dd00a53e8e1b5ea",
-      "licenseConcluded": "NOASSERTION",
+      "licenseConcluded": "LicenseRef-vcpkg-null",
       "licenseDeclared": "NOASSERTION",
       "copyrightText": "NOASSERTION",
       "description": "A stub package that ensures that Vulkan headers and a loader are available.\nOn Android, the NDK provides a loader at API level 24 or higher.",
@@ -88,9 +88,9 @@
     {
       "name": "vulkan:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "5360086bbb7fc7da3f2d5841a01e7a8fa339853680564510402c214963cbd44d",
+      "versionInfo": "b772e341bd8e747391effe17693e073999612a9996b193c1fb631eaa06adc4b9",
       "downloadLocation": "NONE",
-      "licenseConcluded": "NOASSERTION",
+      "licenseConcluded": "LicenseRef-vcpkg-null",
       "licenseDeclared": "NOASSERTION",
       "copyrightText": "NOASSERTION",
       "comment": "This is a binary package built by vcpkg."
@@ -98,8 +98,8 @@
   ],
   "files": [
     {
-      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/3e8d64ec799440b97c7151f97dd00a53e8e1b5ea/CMakeLists.txt",
-      "SPDXID": "SPDXRef-file-0",
+      "fileName": "./CMakeLists.txt",
+      "SPDXID": "SPDXRef-port-file-0",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -110,8 +110,8 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/3e8d64ec799440b97c7151f97dd00a53e8e1b5ea/portfile.cmake",
-      "SPDXID": "SPDXRef-file-1",
+      "fileName": "./portfile.cmake",
+      "SPDXID": "SPDXRef-port-file-1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -122,8 +122,8 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/3e8d64ec799440b97c7151f97dd00a53e8e1b5ea/usage",
-      "SPDXID": "SPDXRef-file-2",
+      "fileName": "./usage",
+      "SPDXID": "SPDXRef-port-file-2",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -134,8 +134,8 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/3e8d64ec799440b97c7151f97dd00a53e8e1b5ea/vcpkg.json",
-      "SPDXID": "SPDXRef-file-3",
+      "fileName": "./vcpkg.json",
+      "SPDXID": "SPDXRef-port-file-3",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -146,12 +146,72 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/siddh/AppData/Local/vcpkg/registries/git-trees/3e8d64ec799440b97c7151f97dd00a53e8e1b5ea/vulkan-result.cmake.in",
-      "SPDXID": "SPDXRef-file-4",
+      "fileName": "./vulkan-result.cmake.in",
+      "SPDXID": "SPDXRef-port-file-4",
       "checksums": [
         {
           "algorithm": "SHA256",
           "checksumValue": "25d969806cf403e575977881b4db44801a0e9fcda860e87449efed4398912442"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./BUILD_INFO",
+      "SPDXID": "SPDXRef-binary-file-0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a73b10fef47d7e23b16c4603b4eed0f405d298ac520f9cf61cf5ba087ed4e225"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./share/vulkan/copyright",
+      "SPDXID": "SPDXRef-binary-file-1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "629f6192bb1514515dd63075a3dbd77add76084721e6b29f4451ac09b1bcccdf"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./share/vulkan/detect-vulkan/CMakeLists.txt",
+      "SPDXID": "SPDXRef-binary-file-2",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0724cb6096811adb0e277dbf521e8b96508bcc3059d97fdda75f705e6e8f0baa"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./share/vulkan/detect-vulkan/vulkan-result.cmake.in",
+      "SPDXID": "SPDXRef-binary-file-3",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "25d969806cf403e575977881b4db44801a0e9fcda860e87449efed4398912442"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./share/vulkan/usage",
+      "SPDXID": "SPDXRef-binary-file-4",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c3642e7a8674d00cc7c6bde2484e83f75d29fbdd356d8275cf55a6067c7986ea"
         }
       ],
       "licenseConcluded": "NOASSERTION",
