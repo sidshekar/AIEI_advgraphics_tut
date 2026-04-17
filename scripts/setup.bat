@@ -1,9 +1,0 @@
-@echo off
-echo Installing CMake...
-winget install --id=Kitware.CMake -e
-echo Installing Vulkan SDK...
-winget install --id=KhronosGroup.VulkanSDK -e
-echo Installing Git…
-winget install --id=Microsoft.Git -e
-echo Development tools installed successfully.
-pause
