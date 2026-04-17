@@ -432,6 +432,9 @@ private:
     }
 
     void createShadowResources() {
+
+        std::cout << "getMaxFramesInFlight: " << unsigned(rhi.getMaxFramesInFlight()) << std::endl;
+        
         shadowImages.reserve(rhi.getMaxFramesInFlight());
 
         auto extent = rhi.getSwapChainExtent();
@@ -513,11 +516,13 @@ private:
     void createDescriptorPool() {
         auto maxFramesInFlight = rhi.getMaxFramesInFlight();
 
+        std::cout << "getMaxFramesInFlight: " << rhi.getMaxFramesInFlight() << std::endl;
+
         std::array<vk::DescriptorPoolSize, 4> poolSizes = {
-            vk::DescriptorPoolSize{ vk::DescriptorType::eUniformBuffer, maxFramesInFlight },
-            vk::DescriptorPoolSize{ vk::DescriptorType::eStorageBuffer, 1 },
-            vk::DescriptorPoolSize{ vk::DescriptorType::eCombinedImageSampler, static_cast<uint32_t>(textures.size()) },
-            vk::DescriptorPoolSize{ vk::DescriptorType::eCombinedImageSampler, maxFramesInFlight },
+            vk::DescriptorPoolSize{ vk::DescriptorType::eUniformBuffer, maxFramesInFlight }, //3
+            vk::DescriptorPoolSize{ vk::DescriptorType::eStorageBuffer, maxFramesInFlight }, //1
+            vk::DescriptorPoolSize{ vk::DescriptorType::eCombinedImageSampler, static_cast<uint32_t>(textures.size() * maxFramesInFlight) }, //2
+            vk::DescriptorPoolSize{ vk::DescriptorType::eCombinedImageSampler, maxFramesInFlight }, //3
         };
 
         vk::DescriptorPoolCreateInfo poolInfo{};
@@ -553,14 +558,14 @@ private:
         vk::WriteDescriptorSet uboWrite{};
         uboWrite.dstBinding = 0;
         uboWrite.dstArrayElement = 0;
-        uboWrite.descriptorCount = 1;
+        uboWrite.descriptorCount = 1; //1
         uboWrite.descriptorType = vk::DescriptorType::eUniformBuffer;
         uboWrite.pBufferInfo = &uboBufferInfo;
 
         vk::WriteDescriptorSet ssboWrite{};
         ssboWrite.dstBinding = 1;
         ssboWrite.dstArrayElement = 0;
-        ssboWrite.descriptorCount = 1;
+        ssboWrite.descriptorCount = 1; //1
         ssboWrite.descriptorType = vk::DescriptorType::eStorageBuffer;
         ssboWrite.pBufferInfo = &storageBufferInfo;
 
@@ -568,7 +573,7 @@ private:
         imageWrite.dstBinding = 2;
         imageWrite.dstArrayElement = 0;
         imageWrite.descriptorType = vk::DescriptorType::eCombinedImageSampler;
-        imageWrite.descriptorCount = imageInfos.size();
+        imageWrite.descriptorCount = imageInfos.size(); //2
         imageWrite.pImageInfo = imageInfos.data();
 
         vk::DescriptorImageInfo shadowImageInfo{};
@@ -578,14 +583,16 @@ private:
         vk::WriteDescriptorSet shadowImageWrite{};
         shadowImageWrite.dstBinding = 3;
         shadowImageWrite.dstArrayElement = 0;
-        shadowImageWrite.descriptorCount = 1;
+        shadowImageWrite.descriptorCount = 1; //1
         shadowImageWrite.descriptorType = vk::DescriptorType::eCombinedImageSampler;
 
         std::vector<vk::DescriptorSetLayout> layouts(rhi.getMaxFramesInFlight(), mainPipeline.getDescriptorSetLayout());
 
+        std::cout << "getMaxFramesInFlight: " << unsigned(rhi.getMaxFramesInFlight()) << std::endl;
+
         vk::DescriptorSetAllocateInfo allocInfo{};
         allocInfo.descriptorPool = descriptorPool;
-        allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
+        allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size()); //3
         allocInfo.pSetLayouts = layouts.data(); 
 
         descriptorSets = rhi.getDevice().allocateDescriptorSets(allocInfo);

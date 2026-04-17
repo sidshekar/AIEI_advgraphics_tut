@@ -10,6 +10,8 @@
 #include "Image.hpp"
 #include "Pipeline.hpp"
 
+#include <iostream>
+
 namespace Gfx
 {
 	class Buffer;

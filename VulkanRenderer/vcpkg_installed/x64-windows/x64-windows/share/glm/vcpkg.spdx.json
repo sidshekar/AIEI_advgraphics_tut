@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/glm-x64-windows-1.0.1#3-f9723722-4179-42eb-b2b4-bbcc84925622",
-  "name": "glm:x64-windows@1.0.1#3 43244ce8e3c33042906d9cb4ac4f13d89f18b77ffb00ef37b4987730d8d70ec1",
+  "documentNamespace": "https://spdx.org/spdxdocs/glm-x64-windows-1.0.1#3-0c4b96f8-7733-4d41-b1a6-d4352a89678a",
+  "name": "glm:x64-windows@1.0.1#3 926e846ed1abcfe118fc9de120379d2deec603b804e0ea59072d57dac6a812f5",
   "creationInfo": {
     "creators": [
       "Tool: vcpkg-2025-11-19-da1f056dc0775ac651bea7e3fbbf4066146a55f3"
     ],
-    "created": "2026-04-16T05:35:04Z"
+    "created": "2026-04-15T05:15:06Z"
   },
   "relationships": [
     {
@@ -2244,7 +2244,7 @@
     {
       "name": "glm:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "43244ce8e3c33042906d9cb4ac4f13d89f18b77ffb00ef37b4987730d8d70ec1",
+      "versionInfo": "926e846ed1abcfe118fc9de120379d2deec603b804e0ea59072d57dac6a812f5",
       "downloadLocation": "NONE",
       "licenseConcluded": "MIT",
       "licenseDeclared": "NOASSERTION",
@@ -2333,7 +2333,7 @@
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "93e47b50a29a8890a82b6886e8d1c714d6cdf33c41b2c3da1714abcda1fc0c75"
+          "checksumValue": "02b0ac63fbe4263d4d8fb306cd2c968ad63ba77ae73d0abfa50e160712a3b36e"
         }
       ],
       "licenseConcluded": "NOASSERTION",
@@ -7481,7 +7481,7 @@
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "ee39baca9bf4ad2e7523d3ecd8957b395222046951bae6e5d7e0257ebb08c5df"
+          "checksumValue": "13eb072619b9480fdbed21f0da1c31998ed0039f9419fa1d16c500b1e409aadc"
         }
       ],
       "licenseConcluded": "NOASSERTION",
@@ -7529,7 +7529,7 @@
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "77d3590425c828dfb30caa8aa9ac0cdde2532f39e0f76d2b6fe637b95735b63a"
+          "checksumValue": "cd3e7e4d06c0cdb4a9c7990b1913d3a0865ccac6d7bc691c66fe81831fcf0149"
         }
       ],
       "licenseConcluded": "NOASSERTION",

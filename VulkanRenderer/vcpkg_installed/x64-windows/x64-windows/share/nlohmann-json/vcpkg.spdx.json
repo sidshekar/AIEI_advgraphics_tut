@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/nlohmann-json-x64-windows-3.11.3#1-7e2c1db2-0a8c-496a-a294-eda57ecb6fc8",
-  "name": "nlohmann-json:x64-windows@3.11.3#1 1c41682968a9bf911beb51d053cb773c03132669272b733bc5f936749c293395",
+  "documentNamespace": "https://spdx.org/spdxdocs/nlohmann-json-x64-windows-3.11.3#1-f05b76b8-7337-42aa-81b0-00bccef2e9b3",
+  "name": "nlohmann-json:x64-windows@3.11.3#1 91c271a494af82a752a41588763842951947ff066910170cbeb75d24e8e11552",
   "creationInfo": {
     "creators": [
       "Tool: vcpkg-2025-11-19-da1f056dc0775ac651bea7e3fbbf4066146a55f3"
     ],
-    "created": "2026-04-16T05:35:11Z"
+    "created": "2026-04-15T05:15:11Z"
   },
   "relationships": [
     {
@@ -319,7 +319,7 @@
     {
       "name": "nlohmann-json:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "1c41682968a9bf911beb51d053cb773c03132669272b733bc5f936749c293395",
+      "versionInfo": "91c271a494af82a752a41588763842951947ff066910170cbeb75d24e8e11552",
       "downloadLocation": "NONE",
       "licenseConcluded": "MIT",
       "licenseDeclared": "NOASSERTION",
@@ -996,7 +996,7 @@
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "eeee75c2eed74905a1379e3d3616d5df4960aa332d51135b7fd5969d7dcca388"
+          "checksumValue": "8eb297a4bc7d672392a51b286b603b8c6e5bf9c267487b42d6fb1bfb671d2d89"
         }
       ],
       "licenseConcluded": "NOASSERTION",

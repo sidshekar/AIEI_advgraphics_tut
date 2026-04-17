@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/tinygltf-x64-windows-2.9.3-d33993dc-cde1-4438-886e-e53ef76d6a9c",
-  "name": "tinygltf:x64-windows@2.9.3 526301cfa1202212f88ffaf3a16788eda06217c55f3e1bf871c8489bf508de33",
+  "documentNamespace": "https://spdx.org/spdxdocs/tinygltf-x64-windows-2.9.3-08e77704-6b90-46b6-aaa5-d4eba6a69162",
+  "name": "tinygltf:x64-windows@2.9.3 92e663c88bd805874a1584e90dd5134adaf96a7f94c674a5ed4dbe04b6d3f264",
   "creationInfo": {
     "creators": [
       "Tool: vcpkg-2025-11-19-da1f056dc0775ac651bea7e3fbbf4066146a55f3"
     ],
-    "created": "2026-04-16T05:35:13Z"
+    "created": "2026-04-15T05:15:14Z"
   },
   "relationships": [
     {
@@ -64,7 +64,7 @@
     {
       "name": "tinygltf:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "526301cfa1202212f88ffaf3a16788eda06217c55f3e1bf871c8489bf508de33",
+      "versionInfo": "92e663c88bd805874a1584e90dd5134adaf96a7f94c674a5ed4dbe04b6d3f264",
       "downloadLocation": "NONE",
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
