@@ -3,8 +3,6 @@
 #include <fstream>
 #include <windows.h>
 
-#include <iostream>
-
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 
 #include <glm/glm.hpp>
@@ -308,24 +306,9 @@ void RHI::initSurface(void* window)
 
 void RHI::pickPhysicalDevice() {
     auto devices = m_instance.enumeratePhysicalDevices();
-
-    
-
-
     auto devIter = std::find_if(devices.begin(), devices.end(),
         [&](auto& device)
         {
-
-            VkPhysicalDeviceProperties pdProp;
-            vkGetPhysicalDeviceProperties(*device, &pdProp);
-
-            printf("%u\n", pdProp.deviceID);
-            printf("%s\n", pdProp.deviceName);
-            printf("%u\n", pdProp.apiVersion);
-            printf("%u\n", pdProp.driverVersion);
-            printf("%u\n", pdProp.vendorID);
-
-
             auto queueFamilies = device.getQueueFamilyProperties();
             auto isSuitable = device.getProperties().apiVersion >= VK_API_VERSION_1_3;
             auto qfpIter = std::find_if(queueFamilies.begin(), queueFamilies.end(),
@@ -605,7 +588,7 @@ void RHI::updateImage(const Gfx::Image& image, const void* contentData, size_t c
     m_graphicsQueue.waitIdle();
 }
 
-Gfx::Pipeline RHI::createGraphicsPipeline(const Gfx::PipelineCreateInfo& createInfo)
+Gfx::Pipeline RHI::createGraphicsPipeline(const Gfx::GraphicsPipelineCreateInfo& createInfo)
 {
     std::vector<vk::Format> colorAttachmentFormats{};
 	std::vector<vk::PipelineColorBlendAttachmentState> colorBlendAttachments{};
@@ -714,4 +697,35 @@ Gfx::Pipeline RHI::createGraphicsPipeline(const Gfx::PipelineCreateInfo& createI
     vk::raii::Pipeline pipeline(m_device, nullptr, pipelineInfo);
 
 	return Gfx::Pipeline(std::move(pipeline), std::move(pipelineLayout), std::move(descriptorSetLayout));
+}
+
+Gfx::Pipeline RHI::createComputePipeline(const Gfx::ComputePipelineCreateInfo& createInfo)
+{
+    vk::DescriptorSetLayoutCreateInfo layoutInfo{};
+    layoutInfo.bindingCount = static_cast<uint32_t>(createInfo.descriptorSetLayoutBindings.size());
+    layoutInfo.pBindings = createInfo.descriptorSetLayoutBindings.data();
+
+    vk::raii::DescriptorSetLayout descriptorSetLayout(m_device, layoutInfo);
+
+    vk::PipelineLayoutCreateInfo pipelineLayoutInfo{};
+    pipelineLayoutInfo.setLayoutCount = 1;
+    pipelineLayoutInfo.pSetLayouts = &*descriptorSetLayout;
+
+    vk::raii::PipelineLayout pipelineLayout(m_device, pipelineLayoutInfo);
+
+    auto code = readFile(createInfo.shader.path);
+    auto shaderModule = createShaderModule(m_device, code);
+
+    vk::PipelineShaderStageCreateInfo shaderStageInfo{};
+    shaderStageInfo.stage = createInfo.shader.stage;
+    shaderStageInfo.module = shaderModule;
+    shaderStageInfo.pName = "main";
+
+    vk::ComputePipelineCreateInfo pipelineInfo{};
+    pipelineInfo.stage = shaderStageInfo;
+    pipelineInfo.layout = pipelineLayout;
+
+    vk::raii::Pipeline pipeline(m_device, nullptr, pipelineInfo);
+
+    return Gfx::Pipeline(std::move(pipeline), std::move(pipelineLayout), std::move(descriptorSetLayout));
 }

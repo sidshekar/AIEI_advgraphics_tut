@@ -54,7 +54,18 @@ namespace Gfx
             vk::PipelineStageFlags2 dstStageMask = {};
         };
 
-        std::vector<AttachmentTransitionInfo> transitionInfos;
+        struct BufferTransitionInfo
+        {
+            std::vector<vk::Buffer> buffers; // buffers to transition (e.g. uniform buffer, storage buffer)
+
+            vk::AccessFlags2 srcAccessMask = {};
+            vk::AccessFlags2 dstAccessMask = {};
+            vk::PipelineStageFlags2 srcStageMask = {};
+            vk::PipelineStageFlags2 dstStageMask = {};
+		};
+
+        std::vector<AttachmentTransitionInfo> attachmentInfos;
+        std::vector<BufferTransitionInfo> bufferInfos;
     };
 
     class RenderGraph
@@ -78,7 +89,7 @@ namespace Gfx
         void executeFrame();
 
     private:
-        const RHI& m_rhi;
+		const RHI& m_rhi;
 
         // recorded passes
         std::vector<RenderPassNode> m_passes;

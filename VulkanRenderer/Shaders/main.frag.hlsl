@@ -21,6 +21,11 @@ SamplerState shadowSampler : register(s3, space0);
 float4 main(VertexOutput input) : SV_Target
 {
     float4 baseColor = textures[NonUniformResourceIndex(input.instanceID)].Sample(textureSampler, input.texCoord);
+    if (input.instanceID < ubo.particleCount)
+    {
+        return float4(input.colour * baseColor.rgb, 1.0);
+    }
+    
     float diffuse = saturate(dot(normalize(input.normalWS), ubo.nLightDir.xyz));
     float3 lightNDC = input.lightPos.xyz / input.lightPos.w;
     float2 lightUV = lightNDC.xy * 0.5f + 0.5f;

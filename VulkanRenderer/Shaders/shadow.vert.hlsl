@@ -15,7 +15,7 @@ VertexOutput main(VertexInput input)
     VertexOutput output;
 
     float3 animatedPosition = rotateFloat3(input.position, ubo.rotation);
-    float4 worldPosition = mul(instanceData.model, float4(animatedPosition, 1.0));
+    float4 worldPosition = mul(instanceData.model, float4(animatedPosition, 1.0)) + float4(instanceData.particleOffset, 0);
     float4 viewPosition = mul(ubo.lightView, worldPosition);
     float4 clipPosition = mul(ubo.lightProj, viewPosition);
 

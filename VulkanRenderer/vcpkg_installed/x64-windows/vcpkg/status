@@ -2,14 +2,14 @@ Package: vcpkg-cmake-config
 Version: 2024-05-23
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 3cb71dd368c2cdf414b19306c117440c8749e229af0461af570c71d1b3c09f92
+Abi: 2ffdf01f45f05a5a29b3221cfe651feeeedcadc1c6664b4ba89ee9896d2a3902
 Status: install ok installed
 
 Package: vcpkg-cmake
 Version: 2024-04-23
 Architecture: x64-windows
 Multi-Arch: same
-Abi: c39015834cac1e02f9c8891aed672efa96ae87fe01fae587c2d80f7420c44e74
+Abi: dc87ff1f84abd46acea7a94f57ad63706af995f6ae668a6d29672b21a9313acd
 Status: install ok installed
 
 Package: glfw3
@@ -18,7 +18,7 @@ Port-Version: 1
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-windows
 Multi-Arch: same
-Abi: cd7ffe34d0e8256acfb2beb042f1902931c7f617b45486b668ac02bf9eb7b1bb
+Abi: 18f96ce3bb2ddea0f3f7a6a9d55b17697a64c16c7c00766530c35e409de26559
 Description: GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan application development. It provides a simple, platform-independent API for creating windows, contexts and surfaces, reading input, handling events, etc.
 Status: install ok installed
 
@@ -28,7 +28,7 @@ Port-Version: 3
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 926e846ed1abcfe118fc9de120379d2deec603b804e0ea59072d57dac6a812f5
+Abi: 640972a55c5ed5acda36d54ef7bb7bdc2034fce7c6242d0d7e9cb125d423891d
 Description: OpenGL Mathematics (GLM)
 Status: install ok installed
 
@@ -38,7 +38,7 @@ Port-Version: 1
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 91c271a494af82a752a41588763842951947ff066910170cbeb75d24e8e11552
+Abi: 8d770885e34d41349f5130fed2ecb26a905dbe5057f73c71a80ce6c00eb01789
 Description: JSON for Modern C++
 Status: install ok installed
 
@@ -47,7 +47,7 @@ Version: 2024-07-29
 Port-Version: 1
 Architecture: x64-windows
 Multi-Arch: same
-Abi: f4308720fc9f3b472801d53943609edebfe9154e4bbf803ece4884c7c74f29b5
+Abi: 19af20ab4184da777a0bd8014b2feffcec3b2122705c12cda5f79592502dbf37
 Description: public domain header-only libraries
 Status: install ok installed
 
@@ -56,7 +56,7 @@ Version: 2.9.3
 Depends: nlohmann-json, stb
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 92e663c88bd805874a1584e90dd5134adaf96a7f94c674a5ed4dbe04b6d3f264
+Abi: 0487669985f5d5057591ebdd87b1c7d0370c02ff382d537ad8c589e440f42ee8
 Description: A header only C++11 glTF 2.0 library.
 Status: install ok installed
 
@@ -66,7 +66,7 @@ Port-Version: 1
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 6b26a6f98c192ba68e5f3bd22e0ae3fdec6146663506a3894666ac45c51d4a10
+Abi: c5442db6b7b947a5b1bc6f6de4fd8ea67cc3c4cb11d9015690098c782c9d265d
 Description: Vulkan header files and API registry
 Status: install ok installed
 
@@ -75,7 +75,7 @@ Version: 1.3.290.0
 Depends: vcpkg-cmake, vcpkg-cmake-config, vulkan-headers
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 6092d1dc102b7f0c52ccc2f9261b68684f44acf8f44945ac95122429c0366fa4
+Abi: 8d6e128f1b8db331b5c655eca081a5606104230b268647483e83c32823d0d871
 Description: Vulkan Development Tools
 Status: install ok installed
 
@@ -84,7 +84,7 @@ Version: 2023-12-17
 Depends: vcpkg-cmake, vulkan-headers, vulkan-loader
 Architecture: x64-windows
 Multi-Arch: same
-Abi: b772e341bd8e747391effe17693e073999612a9996b193c1fb631eaa06adc4b9
+Abi: 396b51435eaa58884c4be85991aeb634e620e5076f1b1c9dbba31276699a07e9
 Description: A stub package that ensures that Vulkan headers and a loader are available.
     On Android, the NDK provides a loader at API level 24 or higher.
 Status: install ok installed

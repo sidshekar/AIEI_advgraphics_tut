@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/vulkan-x64-windows-2023-12-17-4de1fb98-9033-4ae4-838a-a30e05a08304",
-  "name": "vulkan:x64-windows@2023-12-17 b772e341bd8e747391effe17693e073999612a9996b193c1fb631eaa06adc4b9",
+  "documentNamespace": "https://spdx.org/spdxdocs/vulkan-x64-windows-2023-12-17-cea428ae-bd52-48da-a935-f2ef3db4d81c",
+  "name": "vulkan:x64-windows@2023-12-17 396b51435eaa58884c4be85991aeb634e620e5076f1b1c9dbba31276699a07e9",
   "creationInfo": {
     "creators": [
       "Tool: vcpkg-2025-11-19-da1f056dc0775ac651bea7e3fbbf4066146a55f3"
     ],
-    "created": "2026-04-15T05:15:27Z"
+    "created": "2026-03-10T05:54:20Z"
   },
   "relationships": [
     {
@@ -88,7 +88,7 @@
     {
       "name": "vulkan:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "b772e341bd8e747391effe17693e073999612a9996b193c1fb631eaa06adc4b9",
+      "versionInfo": "396b51435eaa58884c4be85991aeb634e620e5076f1b1c9dbba31276699a07e9",
       "downloadLocation": "NONE",
       "licenseConcluded": "LicenseRef-vcpkg-null",
       "licenseDeclared": "NOASSERTION",

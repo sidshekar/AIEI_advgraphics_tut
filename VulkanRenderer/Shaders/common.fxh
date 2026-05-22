@@ -14,12 +14,17 @@ struct UniformBuffer
     float4x4 lightProj;
     float4 rotation;
     float4 nLightDir;
+    uint particleCount;
+    float time;
+    uint2 pad;
 };
 
 struct StorageBuffer
 {
     float4x4 model;
     float3 colour;
+    float3 particleOrbit;
+    float3 particleOffset;
 };
 
 float3 rotateFloat3(float3 v, float4 q)

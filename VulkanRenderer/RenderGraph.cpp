@@ -61,9 +61,10 @@ void RenderGraph::executeFrame()
     // We assume all passes render to the swapchain color image directly in this simple sample.
     for (auto& pass : m_passes)
     {
-        std::vector<vk::ImageMemoryBarrier2> barriers{};
+        std::vector<vk::ImageMemoryBarrier2> imageBarriers{};
+        std::vector<vk::BufferMemoryBarrier2> bufferBarriers{};
 
-        for (auto& transitionInfo : pass.transitionInfos) 
+        for (auto& transitionInfo : pass.attachmentInfos) 
         {
             if (transitionInfo.oldLayout != transitionInfo.newLayout) 
             {
@@ -74,21 +75,33 @@ void RenderGraph::executeFrame()
                 barrier.dstAccessMask = transitionInfo.dstAccessMask;
                 barrier.oldLayout = transitionInfo.oldLayout;
                 barrier.newLayout = transitionInfo.newLayout;
-                barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
                 barrier.image = transitionInfo.images[frameIndex];
                 barrier.subresourceRange.aspectMask = transitionInfo.aspectMask;
                 barrier.subresourceRange.levelCount = 1;
                 barrier.subresourceRange.layerCount = 1;
-                barriers.emplace_back(std::move(barrier));
+                imageBarriers.emplace_back(std::move(barrier));
             }
         }
 
-        if (barriers.size()) 
+        for (auto& transitionInfo : pass.bufferInfos)
+        {
+			vk::BufferMemoryBarrier2 barrier{};
+			barrier.srcStageMask = transitionInfo.srcStageMask;
+			barrier.srcAccessMask = transitionInfo.srcAccessMask;
+			barrier.dstStageMask = transitionInfo.dstStageMask;
+			barrier.dstAccessMask = transitionInfo.dstAccessMask;
+			barrier.buffer = transitionInfo.buffers[frameIndex];
+			barrier.size = VK_WHOLE_SIZE;
+			bufferBarriers.emplace_back(std::move(barrier));
+        }
+
+        if (imageBarriers.size()) 
         {
             vk::DependencyInfo dependencyInfo{};
-            dependencyInfo.imageMemoryBarrierCount = static_cast<uint32_t>(barriers.size());
-            dependencyInfo.pImageMemoryBarriers = barriers.data();
+            dependencyInfo.imageMemoryBarrierCount = static_cast<uint32_t>(imageBarriers.size());
+            dependencyInfo.pImageMemoryBarriers = imageBarriers.data();
+			dependencyInfo.bufferMemoryBarrierCount = static_cast<uint32_t>(bufferBarriers.size());
+			dependencyInfo.pBufferMemoryBarriers = bufferBarriers.data();
             cmd.pipelineBarrier2(dependencyInfo);
         }
 

@@ -17,6 +17,9 @@ for %%F in (*.hlsl) do (
         ) else if /i "!stage!"=="vert" (
             set "profile=vs_6_6"
             set "compile=1"
+        ) else if /i "!stage!"=="comp" (
+            set "profile=cs_6_6"
+            set "compile=1"
         ) else (
             set "compile=0"
         )
@@ -33,5 +36,3 @@ for %%F in (*.hlsl) do (
 )
 
 echo Done.
-
-pause

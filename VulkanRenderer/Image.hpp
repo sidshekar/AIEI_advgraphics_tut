@@ -2,7 +2,6 @@
 
 #include "RHI.hpp"
 
-
 namespace Gfx
 {
     class Image
