@@ -1,14 +1,18 @@
 #pragma once
 
+#include <variant>
 #include <vulkan/vulkan_raii.hpp>
 
+
 #include "Buffer.hpp"
+#include "DescriptorSet.hpp"
 #include "Image.hpp"
 #include "Pipeline.hpp"
 
 namespace Gfx
 {
 	class Buffer;
+	class DescriptorSet;
 	class Image;
 	class Pipeline;
 
@@ -49,6 +53,21 @@ namespace Gfx
 		std::vector<vk::DescriptorSetLayoutBinding> descriptorSetLayoutBindings;
 	};
 
+	struct DescriptorBinding
+	{
+		vk::DescriptorType type;
+		std::variant<
+			std::vector<vk::DescriptorBufferInfo>,
+			std::vector<std::vector<vk::DescriptorImageInfo>>
+		> data;
+	};
+
+	struct DescriptorSetConfig
+	{
+		vk::DescriptorSetLayout layout;
+		std::vector<DescriptorBinding> bindings;
+	};
+
 	class RHI
 	{
 	public:
@@ -79,6 +98,17 @@ namespace Gfx
 
 		Pipeline createGraphicsPipeline(const GraphicsPipelineCreateInfo& createInfo);
 		Pipeline createComputePipeline(const ComputePipelineCreateInfo& createInfo);
+
+		std::vector<std::vector<DescriptorSet>> createDescriptorSets(const std::vector<DescriptorSetConfig>& configs);
+
+		template<int S>
+		std::array<std::vector<DescriptorSet>, S> createDescriptorSets(const std::array<DescriptorSetConfig, S>& configs)
+		{
+			auto sets = createDescriptorSets(std::vector<DescriptorSetConfig>(configs.begin(), configs.end()));
+			std::array<std::vector<DescriptorSet>, S> result{};
+			std::move(sets.begin(), sets.end(), result.begin());
+			return result;
+		}
 
 		template<typename T>
 		void updateBuffer(const Buffer& buffer, const T& data) {
@@ -124,4 +154,3 @@ namespace Gfx
 		vk::raii::CommandPool m_commandPool = nullptr;
 	};
 }
-

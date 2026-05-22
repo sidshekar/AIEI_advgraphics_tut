@@ -29,7 +29,7 @@ for %%F in (*.hlsl) do (
 
     if "!compile!"=="1" (
         echo Compiling %%F with !profile!...
-        dxc.exe -spirv -T !profile! -E main -Fo "%%~nF.spv" "%%F"
+        C:\VulkanSDK\1.3.290.0\Bin\dxc.exe -spirv -T !profile! -E main -Fo "%%~nF.spv" "%%F"
     ) else (
         echo Skipping %%F
     )
