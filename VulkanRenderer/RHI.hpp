@@ -3,12 +3,6 @@
 #include <variant>
 #include <vulkan/vulkan_raii.hpp>
 
-
-#include "Buffer.hpp"
-#include "DescriptorSet.hpp"
-#include "Image.hpp"
-#include "Pipeline.hpp"
-
 namespace Gfx
 {
 	class Buffer;
