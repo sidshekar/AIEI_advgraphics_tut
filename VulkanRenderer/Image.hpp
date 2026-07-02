@@ -1,37 +1,64 @@
 #pragma once
 
-#include "RHI.hpp"
+#include <vulkan/vulkan_raii.hpp>
 
 namespace Gfx
 {
+    struct ImageInfo
+    {
+        vk::ImageCreateInfo createInfo;
+        std::vector<vk::Image> images;
+        std::vector<vk::ImageView> imageViews;
+    };
+
     class Image
     {
     private:
         friend class RHI;
 
-        Image(vk::raii::Image&& image, vk::raii::DeviceMemory&& bufferMemory, vk::raii::ImageView&& imageView, vk::Extent3D extent, vk::Format format);
+        Image(
+            const vk::ImageCreateInfo& createInfo, 
+            std::vector<vk::raii::Image>&& images, 
+            std::vector<vk::raii::DeviceMemory>&& imageMemories, 
+            std::vector<vk::raii::ImageView>&& imageViews);
 
     public:
-        Image(nullptr_t):
-            m_image(nullptr), 
-            m_bufferMemory(nullptr), 
-			m_imageView(nullptr),
-            m_extent({0, 0, 0}), 
-			m_format(vk::Format::eUndefined)
-        {}
+        Image(nullptr_t) {}
 
         Image() = delete;
 
-        operator vk::Image() const { return *m_image; }
-        vk::Image operator*() const { return *m_image; }
+        const vk::ImageCreateInfo& getCreateInfo() const { return m_createInfo; }
+		const vk::ImageView& getImageView(int index) const { return *m_imageViews[index]; }
+        const vk::Image& getImage(int index) const { return *m_images[index]; }
+        int getImageCount() const { return static_cast<int>(m_images.size()); }
 
-		const vk::raii::ImageView& getImageView() const { return m_imageView; }
+        const ImageInfo& getInfo() const { return m_info; }
 
     private:
-        vk::raii::Image m_image;
-        vk::raii::DeviceMemory m_bufferMemory;
-        vk::raii::ImageView m_imageView;
-        vk::Extent3D m_extent;
-        vk::Format m_format;
+        vk::ImageCreateInfo m_createInfo;
+        std::vector<vk::raii::Image> m_images;
+        std::vector<vk::raii::DeviceMemory> m_imageMemories;
+        std::vector<vk::raii::ImageView> m_imageViews;
+        ImageInfo m_info;
+    };
+
+    class Sampler
+    {
+    private:
+        friend class RHI;
+
+        Sampler(const vk::SamplerCreateInfo& createInfo, vk::raii::Sampler&& sampler);
+
+    public:
+        Sampler(nullptr_t) : m_sampler(nullptr) {}
+
+        Sampler() = delete;
+
+        const vk::SamplerCreateInfo& getCreateInfo() const { return m_createInfo; }
+        const vk::Sampler& getSampler() const { return *m_sampler; }
+
+    private:
+        vk::SamplerCreateInfo m_createInfo;
+        vk::raii::Sampler m_sampler;
     };
 }

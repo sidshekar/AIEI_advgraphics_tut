@@ -1,49 +1,34 @@
 #pragma once
 
+#include <optional>
 #include <variant>
 #include <vulkan/vulkan_raii.hpp>
+
+#include "Buffer.hpp"
+#include "Image.hpp"
+#include "DescriptorSet.hpp"
+#include "Pipeline.hpp"
 
 namespace Gfx
 {
 	class Buffer;
-	class DescriptorSet;
 	class Image;
+	class DescriptorSet;
 	class Pipeline;
-
-	struct ShaderDesc
-	{
-		std::string path;
-		vk::ShaderStageFlagBits stage;
-	};
-
-	struct ColorAttachmentDesc
-	{
-		vk::Format format;
-		vk::ColorComponentFlags writeMask =
-			vk::ColorComponentFlagBits::eR |
-			vk::ColorComponentFlagBits::eG |
-			vk::ColorComponentFlagBits::eB |
-			vk::ColorComponentFlagBits::eA;
-	};
-
-	struct DepthAttachmentDesc
-	{
-		vk::Format format;
-	};
 
 	struct GraphicsPipelineCreateInfo
 	{
-		std::vector<ShaderDesc> shaders;
-		std::vector<vk::VertexInputBindingDescription> vertexInputBindings;
+		std::vector<std::pair<std::string, vk::ShaderStageFlagBits>> shaders;
+		vk::VertexInputBindingDescription vertexInputBinding;
 		std::vector<vk::VertexInputAttributeDescription> vertexInputAttributes;
 		std::vector<vk::DescriptorSetLayoutBinding> descriptorSetLayoutBindings;
-		std::vector<ColorAttachmentDesc> colorAttachments;
-		DepthAttachmentDesc depthAttachment;
+		std::vector<vk::Format> colorAttachments;
+		std::optional<vk::Format> depthAttachment;
 	};
 
 	struct ComputePipelineCreateInfo
 	{
-		ShaderDesc shader;
+		std::string shader;
 		std::vector<vk::DescriptorSetLayoutBinding> descriptorSetLayoutBindings;
 	};
 
@@ -56,12 +41,6 @@ namespace Gfx
 		> data;
 	};
 
-	struct DescriptorSetConfig
-	{
-		vk::DescriptorSetLayout layout;
-		std::vector<DescriptorBinding> bindings;
-	};
-
 	class RHI
 	{
 	public:
@@ -72,36 +51,57 @@ namespace Gfx
 
 		const vk::raii::PhysicalDevice& getPhysicalDevice() const { return m_physicalDevice; }
 		const vk::raii::Device& getDevice() const { return m_device; }
-		const vk::raii::SwapchainKHR& getSwapChain() const { return m_swapChain; }
-		const vk::raii::Queue& getGraphicsQueue() const { return m_graphicsQueue; }
-		const vk::raii::Queue& getPresentQueue() const { return m_presentQueue; }
 		uint8_t getMaxFramesInFlight() const { return m_maxFramesInFlight; }
 		const vk::raii::CommandPool& getCommandPool() const { return m_commandPool; }
 		vk::Format getSurfaceFormat() const { return m_surfaceFormat.format; }
 		vk::Format getDepthFormat() const { return m_depthFormat; }
-		const std::vector<vk::Image>& getDepthImages() const { return m_depthImageObjs; }
-		const vk::raii::ImageView& getSwapChainImageView(int index) const { return m_swapChainImageViews[index]; }
-		const vk::raii::ImageView& getDepthImageView(int index) const;
+		vk::Image getSwapChainImage(int index) const { return m_swapChainImages[index]; }
+		const vk::Image& getDepthImage(int index) const { return m_depthImage.getImage(index); }
+		const vk::ImageView& getSwapChainImageView(int index) const { return *m_swapChainImageViews[index]; }
+		const vk::ImageView& getDepthImageView(int index) const { return m_depthImage.getImageView(index); }
 		vk::Extent2D getSwapChainExtent() const { return m_swapChainExtent; }
 
+		std::pair<vk::Result, uint32_t> acquireNextSwapChainImage(const vk::Semaphore& signal) const { return m_swapChain.acquireNextImage(UINT64_MAX, signal, nullptr); }
+
 		Buffer createBuffer(const vk::BufferCreateInfo& bufferInfo, vk::MemoryPropertyFlags memProperties = vk::MemoryPropertyFlagBits::eDeviceLocal);
+		Buffer createBuffer(const vk::BufferCreateInfo& bufferInfo, const void* contentData, size_t contentSize, vk::MemoryPropertyFlags memProperties = vk::MemoryPropertyFlagBits::eDeviceLocal);
 		void updateBuffer(const Buffer& buffer, const void* contentData, size_t contentSize);
 
-		Image createImage(const vk::ImageCreateInfo& imageInfo, vk::MemoryPropertyFlags properties = vk::MemoryPropertyFlagBits::eDeviceLocal);
+		Image createImage(const vk::ImageCreateInfo& imageInfo, vk::MemoryPropertyFlags memProperties = vk::MemoryPropertyFlagBits::eDeviceLocal);
+		Sampler createSampler(const vk::SamplerCreateInfo& samplerInfo);
 		void updateImage(const Gfx::Image& image, const void* contentData, size_t contentSize);
 
-		Pipeline createGraphicsPipeline(const GraphicsPipelineCreateInfo& createInfo);
-		Pipeline createComputePipeline(const ComputePipelineCreateInfo& createInfo);
+		Pipeline createPipeline(const GraphicsPipelineCreateInfo& createInfo);
+		Pipeline createPipeline(const ComputePipelineCreateInfo& createInfo);
 
-		std::vector<std::vector<DescriptorSet>> createDescriptorSets(const std::vector<DescriptorSetConfig>& configs);
+		std::vector<DescriptorSet> createDescriptorSets(const vk::DescriptorSetLayout& layout, const std::vector<DescriptorBinding>& bindings);
 
-		template<int S>
-		std::array<std::vector<DescriptorSet>, S> createDescriptorSets(const std::array<DescriptorSetConfig, S>& configs)
+		template<typename T>
+		Buffer createBuffer(const vk::BufferCreateInfo& bufferInfo, const T& data, vk::MemoryPropertyFlags memProperties = vk::MemoryPropertyFlagBits::eDeviceLocal) {
+		    return createBuffer(bufferInfo, &data, sizeof(T), memProperties);
+		}
+
+		template<typename T>
+		Buffer createBuffer(const vk::BufferCreateInfo& bufferInfo, const std::vector<T>& data, vk::MemoryPropertyFlags memProperties = vk::MemoryPropertyFlagBits::eDeviceLocal) {
+		    return createBuffer(bufferInfo, data.data(), data.size() * sizeof(T), memProperties);
+		}
+
+		Image createImage2D(vk::Format format, vk::Extent2D extent, vk::ImageUsageFlags usageFlags)
 		{
-			auto sets = createDescriptorSets(std::vector<DescriptorSetConfig>(configs.begin(), configs.end()));
-			std::array<std::vector<DescriptorSet>, S> result{};
-			std::move(sets.begin(), sets.end(), result.begin());
-			return result;
+			vk::ImageCreateInfo imageInfo{};
+			imageInfo.imageType = vk::ImageType::e2D;
+			imageInfo.format = format;
+			imageInfo.extent = vk::Extent3D{ extent, 1 };
+			imageInfo.mipLevels = 1;
+			imageInfo.arrayLayers = 1;
+			imageInfo.samples = vk::SampleCountFlagBits::e1;
+			imageInfo.usage = usageFlags;
+			return createImage(imageInfo);
+		}
+
+		Image createImage2D(vk::Format format, vk::ImageUsageFlags usageFlags)
+		{
+			return createImage2D(format, m_swapChainExtent, usageFlags);
 		}
 
 		template<typename T>
@@ -117,6 +117,8 @@ namespace Gfx
 		void updateImage(const Image& image, const std::vector<uint8_t>& data) {
 			updateImage(image, data.data(), data.size());
 		}
+
+		void presentSwapChainImage(uint32_t imageIndex, const vk::SubmitInfo& submitInfo, const vk::Fence& inFlightFence) const;
 
 	private:
 		void initInstance(const std::string& appName, const std::vector<const char*>& extensions);
@@ -141,10 +143,10 @@ namespace Gfx
 		vk::Extent2D m_swapChainExtent{};
 		vk::raii::SwapchainKHR m_swapChain = nullptr;
 		uint8_t m_maxFramesInFlight = 0;
+		std::vector<vk::Image> m_swapChainImages{};
 		std::vector<vk::raii::ImageView> m_swapChainImageViews{};
 		vk::Format m_depthFormat{};
-		std::vector<Gfx::Image> m_depthImages{};
-		std::vector<vk::Image> m_depthImageObjs{};
+		Gfx::Image m_depthImage = nullptr;
 		vk::raii::CommandPool m_commandPool = nullptr;
 	};
 }

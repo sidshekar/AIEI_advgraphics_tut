@@ -1,36 +1,45 @@
 #pragma once
 
-#include "RHI.hpp"
+#include <vulkan/vulkan_raii.hpp>
 
 namespace Gfx
 {
+    struct BufferInfo
+    {
+        vk::BufferCreateInfo createInfo;
+        std::vector<vk::Buffer> buffers;
+    };
+
 	class Buffer
 	{
     private:
         friend class RHI;
 
-        Buffer(vk::raii::Buffer&& buffer, vk::raii::DeviceMemory&& bufferMemory, vk::DeviceSize size);
+        Buffer(
+            const vk::BufferCreateInfo& createInfo, 
+            std::vector<vk::raii::Buffer>&& buffers, 
+            std::vector<vk::raii::DeviceMemory>&& bufferMemories);
 
     public:
-        Buffer(nullptr_t):
-			m_buffer(nullptr), 
-            m_bufferMemory(nullptr), 
-            m_size(0)
-        {}
+        Buffer(nullptr_t) {}
 
         Buffer() = delete;
 
-        operator vk::Buffer() const { return *m_buffer; }
-        vk::Buffer operator*() const { return *m_buffer; }
+        const vk::BufferCreateInfo& getCreateInfo() const { return m_createInfo; }
+        const vk::Buffer& getBuffer(int index) const { return *m_buffers[index]; }
+        int getBufferCount() const { return static_cast<int>(m_buffers.size()); }
 
         void map();
         void unmap();
-		void* getMappedData() const { return m_mappedData; }
+		void* getMappedData(int index) const { return m_mappedData[index]; }
+
+        const BufferInfo& getInfo() const { return m_info; }
 
     private:
-        vk::raii::Buffer m_buffer;
-        vk::raii::DeviceMemory m_bufferMemory;
-        vk::DeviceSize m_size;
-		void* m_mappedData = nullptr;
+        vk::BufferCreateInfo m_createInfo;
+        std::vector<vk::raii::Buffer> m_buffers;
+        std::vector<vk::raii::DeviceMemory> m_bufferMemories;
+        std::vector<void*> m_mappedData;
+        BufferInfo m_info;
     };
 }
